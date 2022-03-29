@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="spring.board.mappers.BoardMapper">
+
+	<!-- 목록을 구하기 -->
+	<select id="selectItem" parameterType="BoardVO" resultType="BoardVO">
+		SELECT id, title, content, userid, viewcount, lockpost FROM board_test
+
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		
+		<if test='search_option.equals("title")'>
+			WHERE title LIKE concat('%', #{keyword}, '%')
+		</if>
+
+		<if test='search_option.equals("content")'>
+			WHERE content LIKE concat('%', #{keyword}, '%')
+		</if>
+
+		<if test='search_option.equals("userid")'>
+			WHERE userid LIKE concat('%', #{keyword}, '%')
+
+		</if>
+
+		<if test='search_option.equals("all")'>
+			WHERE title LIKE concat('%', #{keyword}, '%')
+				or content LIKE concat('%', #{keyword}, '%')
+					or userid LIKE concat('%', #{keyword}, '%')
+		</if>
+	 
+
+		ORDER BY id DESC
+
+		<if test="pagesize > 0">
+			LIMIT #{offset}, #{pagesize}
+		</if>
+
+	</select>
+
+
+	<!-- 전체데이터수를 구하는 쿼리 -->
+	<select id="selectAll" parameterType="BoardVO" resultType="int">
+		SELECT count(*) FROM
+		board_test
+	
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		
+		<if test='search_option.equals("title")'>
+			WHERE title LIKE concat('%', #{keyword}, '%')
+		</if>
+
+		<if test='search_option.equals("content")'>
+			WHERE content LIKE concat('%', #{keyword}, '%')
+		</if>
+
+		<if test='search_option.equals("userid")'>
+			WHERE userid LIKE concat('%', #{keyword}, '%')
+
+		</if>
+
+		<if test='search_option.equals("all")'>
+			WHERE title LIKE concat('%', #{keyword}, '%')
+				or content LIKE concat('%', #{keyword}, '%')
+					or userid LIKE concat('%', #{keyword}, '%')
+		</if>
+	 
+	</select>
+
+
+	<!-- 1개의 상세정보 -->
+	<select id="selectOne" resultType="BoardVO" parameterType="int">
+		SELECT id, title, content, userid, postpw FROM board_test WHERE id =
+		#{id}
+	</select>
+
+	<!-- 추가하기 -->
+	<insert id="insert">
+		INSERT INTO board_test (id, title, content, userid,
+		postpw, lockpost) VALUES (#{id},
+		#{title},#{content},#{userid},#{postpw},#{lockpost})
+	</insert>
+
+	<!-- 수정하기 -->
+	<update id="update">
+		UPDATE board_test SET id=#{id}, title=#{title},
+		content=#{content}, userid=#{userid} ,postpw=#{postpw},
+		lockpost=#{lockpost} WHERE id=#{id}
+	</update>
+
+	<!-- 삭제하기 -->
+	<delete id="delete">
+		DELETE FROM board_test WHERE id=#{id}
+	</delete>
+
+	<!-- 조회수 -->
+	<update id="updateviewCount">
+		update board_test set viewcount = viewcount +1 WHERE
+		id=#{id}
+	</update>
+</mapper>
